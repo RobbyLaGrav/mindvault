@@ -12,7 +12,7 @@ const floatingIcons = ["🧠", "⚡", "🔥", "🎯", "🔁"];
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login, isLoading, error } = useAuthStore();
+  const { login, isLoading } = useAuthStore();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [formError, setFormError] = useState("");
@@ -39,10 +39,14 @@ export default function LoginPage() {
     }
 
     try {
-      await login(email, password);
-      router.push("/");
+      const result = await login(email, password);
+      if (result.error) {
+        setFormError(result.error);
+      } else {
+        router.push("/");
+      }
     } catch (err) {
-      setFormError(error || "Login failed");
+      setFormError("Login failed");
     }
   };
 
@@ -206,14 +210,26 @@ export default function LoginPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6 }}
             >
-              <ModernButton
-                fullWidth
-                size="lg"
-                loading={isLoading}
-                onClick={handleSubmit}
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full"
+                style={{
+                  background: "linear-gradient(135deg, var(--accent) 0%, rgba(34,197,94,0.8) 100%)",
+                  color: "#000",
+                  padding: "1rem 2rem",
+                  fontSize: "1.125rem",
+                  fontWeight: "600",
+                  borderRadius: "1rem",
+                  border: "1px solid rgba(255,255,255,0.2)",
+                  cursor: isLoading ? "not-allowed" : "pointer",
+                  opacity: isLoading ? 0.5 : 1,
+                  transition: "all 0.3s ease",
+                  backdropFilter: "blur(10px)",
+                }}
               >
                 {isLoading ? "Signing in..." : "Sign In"}
-              </ModernButton>
+              </button>
             </motion.div>
           </form>
 

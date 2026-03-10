@@ -112,7 +112,7 @@ export default function Sidebar() {
             {section.items.map((item) => {
               const active = pathname === item.href;
               return (
-                <motion.div key={item.href}>
+                <motion.div key={item.href} whileHover={{ x: 4 }}>
                   <Link
                     href={item.href}
                     className="relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 no-underline group"
@@ -121,7 +121,6 @@ export default function Sidebar() {
                       background: active ? "linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%)" : "transparent",
                       border: active ? "1px solid rgba(255,255,255,0.1)" : "1px solid transparent",
                     }}
-                    whileHover={{ x: 4 }}
                   >
                     {active && (
                       <motion.div

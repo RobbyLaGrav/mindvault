@@ -37,7 +37,7 @@ const checkPasswordStrength = (password: string): PasswordStrength => {
 
 export default function SignupPage() {
   const router = useRouter();
-  const { signup, isLoading, error } = useAuthStore();
+  const { signup, isLoading } = useAuthStore();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -84,10 +84,14 @@ export default function SignupPage() {
     }
 
     try {
-      await signup(email, password, name);
-      router.push("/");
+      const result = await signup(email, password, name);
+      if (result.error) {
+        setFormError(result.error);
+      } else {
+        router.push("/");
+      }
     } catch (err) {
-      setFormError(error || "Signup failed");
+      setFormError("Signup failed");
     }
   };
 
@@ -270,7 +274,7 @@ export default function SignupPage() {
                 placeholder="Confirm your password"
                 value={confirmPassword}
                 onChange={setConfirmPassword}
-                success={passwordsMatch && password.length > 0}
+                success={Boolean(passwordsMatch && password.length > 0)}
               />
             </motion.div>
 
@@ -318,15 +322,26 @@ export default function SignupPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.55 }}
             >
-              <ModernButton
-                fullWidth
-                size="lg"
-                loading={isLoading}
-                onClick={handleSubmit}
-                disabled={!agreedToTerms || !passwordsMatch}
+              <button
+                type="submit"
+                disabled={!agreedToTerms || !passwordsMatch || isLoading}
+                className="w-full"
+                style={{
+                  background: "linear-gradient(135deg, var(--accent) 0%, rgba(34,197,94,0.8) 100%)",
+                  color: "#000",
+                  padding: "1rem 2rem",
+                  fontSize: "1.125rem",
+                  fontWeight: "600",
+                  borderRadius: "1rem",
+                  border: "1px solid rgba(255,255,255,0.2)",
+                  cursor: !agreedToTerms || !passwordsMatch || isLoading ? "not-allowed" : "pointer",
+                  opacity: !agreedToTerms || !passwordsMatch || isLoading ? 0.5 : 1,
+                  transition: "all 0.3s ease",
+                  backdropFilter: "blur(10px)",
+                }}
               >
                 {isLoading ? "Creating account..." : "Create Account"}
-              </ModernButton>
+              </button>
             </motion.div>
           </form>
 

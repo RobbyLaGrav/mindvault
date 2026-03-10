@@ -1,146 +1,308 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/useAuthStore";
-import { useStore } from "@/store/useStore";
+import { motion } from "framer-motion";
+import ModernInput from "@/components/ui/ModernInput";
+import ModernButton from "@/components/ui/ModernButton";
+
+const floatingIcons = ["🧠", "⚡", "🔥", "🎯", "🔁"];
 
 export default function LoginPage() {
+  const router = useRouter();
+  const { login, isLoading, error } = useAuthStore();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const router = useRouter();
-  const login = useAuthStore((s) => s.login);
-  const syncFromServer = useStore((s) => s.syncFromServer);
-  const setServerMode = useStore((s) => s.setServerMode);
+  const [formError, setFormError] = useState("");
+  const [floatingItems, setFloatingItems] = useState<{ id: number; x: number; y: number; icon: string }[]>([]);
+
+  // Generate floating background items
+  useEffect(() => {
+    const items = Array.from({ length: 15 }, (_, i) => ({
+      id: i,
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      icon: floatingIcons[Math.floor(Math.random() * floatingIcons.length)],
+    }));
+    setFloatingItems(items);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
-    setLoading(true);
+    setFormError("");
 
-    const result = await login(email, password);
-    if (result.error) {
-      setError(result.error);
-      setLoading(false);
+    if (!email || !password) {
+      setFormError("Please fill in all fields");
       return;
     }
 
-    setServerMode(true);
-    await syncFromServer();
-    router.push("/");
+    try {
+      await login(email, password);
+      router.push("/");
+    } catch (err) {
+      setFormError(error || "Login failed");
+    }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4" style={{ background: "var(--bg-primary)" }}>
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
+      {/* Animated background gradient */}
+      <div className="fixed inset-0 -z-10">
+        <div
+          className="absolute inset-0"
+          style={{
+            background: "linear-gradient(135deg, rgba(34,197,94,0.05) 0%, rgba(59,130,246,0.05) 50%, rgba(168,85,247,0.05) 100%)",
+          }}
+        />
+        <motion.div
+          className="absolute top-0 right-0 w-96 h-96 rounded-full opacity-10"
+          style={{
+            background: "linear-gradient(135deg, var(--accent) 0%, #3b82f6 100%)",
+            filter: "blur(40px)",
+          }}
+          animate={{ x: [0, 50, 0], y: [0, 30, 0] }}
+          transition={{ duration: 8, repeat: Infinity }}
+        />
+        <motion.div
+          className="absolute bottom-0 left-0 w-96 h-96 rounded-full opacity-10"
+          style={{
+            background: "linear-gradient(135deg, #a855f7 0%, #f97316 100%)",
+            filter: "blur(40px)",
+          }}
+          animate={{ x: [0, -50, 0], y: [0, -30, 0] }}
+          transition={{ duration: 10, repeat: Infinity, delay: 1 }}
+        />
+      </div>
+
+      {/* Floating icons */}
+      {floatingItems.map((item) => (
+        <motion.div
+          key={item.id}
+          className="fixed text-4xl opacity-20 pointer-events-none"
+          style={{ left: `${item.x}%`, top: `${item.y}%` }}
+          animate={{
+            y: [0, -20, 0],
+            x: [0, Math.random() > 0.5 ? 10 : -10, 0],
+          }}
+          transition={{
+            duration: 6 + Math.random() * 4,
+            repeat: Infinity,
+            delay: Math.random() * 2,
+          }}
+        >
+          {item.icon}
+        </motion.div>
+      ))}
+
+      {/* Main content */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md"
+        transition={{ duration: 0.8 }}
+        className="relative z-10 w-full max-w-md mx-4"
       >
-        {/* Logo */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold tracking-tight" style={{ color: "var(--accent)" }}>
-            MINDVAULT
-          </h1>
-          <p className="text-sm mt-1" style={{ color: "var(--text-muted)" }}>
-            Welcome back to your command center
-          </p>
-        </div>
-
-        {/* Card */}
-        <div className="rounded-2xl p-8" style={{ background: "var(--bg-card)", border: "1px solid var(--border)" }}>
-          <h2 className="text-xl font-semibold mb-6" style={{ color: "var(--text-primary)" }}>
-            Sign in
-          </h2>
-
-          {error && (
+        {/* Glass card */}
+        <motion.div
+          className="rounded-3xl p-8 backdrop-blur-xl border border-white/10 shadow-2xl"
+          style={{
+            background: "linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)",
+          }}
+          whileHover={{ boxShadow: "0 20px 60px rgba(34,197,94,0.2)" }}
+        >
+          {/* Header */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="text-center mb-8"
+          >
             <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mb-4 p-3 rounded-xl text-sm"
-              style={{ background: "rgba(239, 68, 68, 0.1)", border: "1px solid rgba(239, 68, 68, 0.2)", color: "#ef4444" }}
-            >
-              {error}
-            </motion.div>
-          )}
-
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-            <div>
-              <label className="block text-xs font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>Email</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                autoFocus
-                placeholder="you@example.com"
-                className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all"
-                style={{
-                  background: "var(--bg-primary)",
-                  border: "1px solid var(--border)",
-                  color: "var(--text-primary)",
-                }}
-              />
-            </div>
-
-            <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label className="text-xs font-medium" style={{ color: "var(--text-secondary)" }}>Password</label>
-                <Link href="/auth/forgot-password" className="text-xs no-underline" style={{ color: "var(--accent)" }}>
-                  Forgot password?
-                </Link>
-              </div>
-              <div className="relative">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  placeholder="Enter your password"
-                  className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all pr-12"
-                  style={{
-                    background: "var(--bg-primary)",
-                    border: "1px solid var(--border)",
-                    color: "var(--text-primary)",
-                  }}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs"
-                  style={{ color: "var(--text-muted)" }}
-                >
-                  {showPassword ? "Hide" : "Show"}
-                </button>
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-3 rounded-xl font-semibold text-sm transition-all mt-2"
+              className="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-4"
               style={{
-                background: loading ? "var(--accent-dim)" : "var(--accent)",
-                color: "#000",
-                opacity: loading ? 0.7 : 1,
+                background: "linear-gradient(135deg, var(--accent) 0%, rgba(34,197,94,0.6) 100%)",
               }}
+              whileHover={{ scale: 1.1, rotate: 10 }}
             >
-              {loading ? "Signing in..." : "Sign in"}
-            </button>
+              🧠
+            </motion.div>
+            <h1 className="text-3xl font-bold mb-2" style={{ color: "var(--text-primary)" }}>
+              Welcome Back
+            </h1>
+            <p style={{ color: "var(--text-muted)" }}>
+              Access your personal command center
+            </p>
+          </motion.div>
+
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-4 mb-6">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.3 }}
+            >
+              <label className="block text-sm font-medium mb-2" style={{ color: "var(--text-secondary)" }}>
+                Email
+              </label>
+              <ModernInput
+                type="email"
+                icon="📧"
+                placeholder="you@example.com"
+                value={email}
+                onChange={setEmail}
+              />
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.4 }}
+            >
+              <label className="block text-sm font-medium mb-2" style={{ color: "var(--text-secondary)" }}>
+                Password
+              </label>
+              <ModernInput
+                type="password"
+                icon="🔐"
+                placeholder="Your password"
+                value={password}
+                onChange={setPassword}
+                onEnter={handleSubmit as any}
+              />
+            </motion.div>
+
+            {/* Error message */}
+            {formError && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="p-3 rounded-xl"
+                style={{ background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.3)" }}
+              >
+                <p style={{ color: "#ef4444", fontSize: "0.875rem" }}>{formError}</p>
+              </motion.div>
+            )}
+
+            {/* Remember & Forgot */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+              className="flex items-center justify-between text-sm"
+            >
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" className="w-4 h-4 rounded" />
+                <span style={{ color: "var(--text-muted)" }}>Remember me</span>
+              </label>
+              <Link href="/auth/forgot-password" style={{ color: "var(--accent)" }} className="hover:underline">
+                Forgot password?
+              </Link>
+            </motion.div>
+
+            {/* Submit button */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+            >
+              <ModernButton
+                fullWidth
+                size="lg"
+                loading={isLoading}
+                onClick={handleSubmit}
+              >
+                {isLoading ? "Signing in..." : "Sign In"}
+              </ModernButton>
+            </motion.div>
           </form>
 
-          <p className="text-center text-sm mt-6" style={{ color: "var(--text-muted)" }}>
-            Don&apos;t have an account?{" "}
-            <Link href="/auth/signup" className="font-medium no-underline" style={{ color: "var(--accent)" }}>
-              Create one
+          {/* Divider */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.7 }}
+            className="flex items-center gap-3 mb-6"
+          >
+            <div style={{ height: "1px", flex: 1, background: "var(--border)" }} />
+            <span style={{ color: "var(--text-muted)", fontSize: "0.875rem" }}>Or</span>
+            <div style={{ height: "1px", flex: 1, background: "var(--border)" }} />
+          </motion.div>
+
+          {/* OAuth buttons */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.8 }}
+            className="grid grid-cols-3 gap-3 mb-6"
+          >
+            {[
+              { icon: "🔵", label: "Google" },
+              { icon: "⬛", label: "GitHub" },
+              { icon: "🍎", label: "Apple" },
+            ].map((provider, i) => (
+              <motion.button
+                key={provider.label}
+                className="p-3 rounded-xl transition-all"
+                style={{
+                  background: "rgba(255,255,255,0.05)",
+                  border: "1px solid rgba(255,255,255,0.1)",
+                }}
+                whileHover={{ scale: 1.05, background: "rgba(255,255,255,0.1)" }}
+                whileTap={{ scale: 0.95 }}
+                transition={{ delay: 0.8 + i * 0.1 }}
+              >
+                <span className="text-xl">{provider.icon}</span>
+              </motion.button>
+            ))}
+          </motion.div>
+
+          {/* Sign up link */}
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.9 }}
+            className="text-center text-sm"
+            style={{ color: "var(--text-muted)" }}
+          >
+            Don't have an account?{" "}
+            <Link
+              href="/auth/signup"
+              style={{ color: "var(--accent)" }}
+              className="font-semibold hover:underline"
+            >
+              Sign up
             </Link>
-          </p>
-        </div>
+          </motion.p>
+        </motion.div>
+
+        {/* Stats footer */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1 }}
+          className="mt-8 grid grid-cols-3 gap-4 text-center"
+        >
+          {[
+            { label: "Users", value: "10K+" },
+            { label: "Tasks", value: "1M+" },
+            { label: "Uptime", value: "99.9%" },
+          ].map((stat) => (
+            <motion.div
+              key={stat.label}
+              whileHover={{ y: -5 }}
+              className="p-4 rounded-2xl"
+              style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)" }}
+            >
+              <p className="text-2xl font-bold" style={{ color: "var(--accent)" }}>
+                {stat.value}
+              </p>
+              <p style={{ color: "var(--text-muted)", fontSize: "0.75rem" }}>
+                {stat.label}
+              </p>
+            </motion.div>
+          ))}
+        </motion.div>
       </motion.div>
     </div>
   );

@@ -5,6 +5,7 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { motion, AnimatePresence } from "framer-motion";
 import { useMemo } from "react";
 import Link from "next/link";
+import CircleCheckbox from "@/components/ui/CircleCheckbox";
 
 export default function DashboardPage() {
   const user = useAuthStore((s) => s.user);
@@ -92,7 +93,7 @@ export default function DashboardPage() {
           <div className="flex flex-col gap-2">
             {overdueTasks.slice(0, 5).map((t) => (
               <div key={t.id} className="flex items-center gap-3">
-                <button onClick={() => toggleTask(t.id)} className="w-4 h-4 rounded border shrink-0" style={{ borderColor: "#ef4444" }} />
+                <CircleCheckbox checked={false} onChange={() => toggleTask(t.id)} size={18} color="#ef4444" />
                 <span className="text-sm flex-1 truncate" style={{ color: "var(--text-primary)" }}>{t.title}</span>
                 <span className="text-xs" style={{ color: "var(--text-muted)" }}>{t.dueDate}</span>
               </div>
@@ -140,7 +141,7 @@ export default function DashboardPage() {
               <div className="flex flex-col gap-2">
                 {todayTasks.map((t) => (
                   <motion.div key={t.id} layout className="flex items-center gap-3 p-3 rounded-xl" style={{ background: "var(--bg-primary)" }}>
-                    <button onClick={() => toggleTask(t.id)} className="w-5 h-5 rounded-md border-2 shrink-0" style={{ borderColor: priorityColor(t.priority) }} />
+                    <CircleCheckbox checked={false} onChange={() => toggleTask(t.id)} size={22} color={priorityColor(t.priority)} />
                     <span className="text-sm flex-1" style={{ color: "var(--text-primary)" }}>{t.title}</span>
                     <span className="text-[10px] px-2 py-0.5 rounded-full font-medium" style={{ background: priorityBg(t.priority), color: priorityColor(t.priority) }}>
                       {t.priority}
@@ -218,10 +219,7 @@ export default function DashboardPage() {
               <div className="flex flex-col gap-2">
                 {todayHabits.map((h) => (
                   <div key={h.id} className="flex items-center gap-3 p-2 rounded-lg">
-                    <div className="w-5 h-5 rounded-md flex items-center justify-center text-xs"
-                      style={{ background: h.doneToday ? h.color : "transparent", border: `2px solid ${h.color}`, color: h.doneToday ? "#000" : h.color }}>
-                      {h.doneToday ? "✓" : ""}
-                    </div>
+                    <CircleCheckbox checked={h.doneToday} onChange={() => {}} size={22} color={h.color} disabled />
                     <span className="text-sm" style={{ color: h.doneToday ? "var(--text-muted)" : "var(--text-primary)", textDecoration: h.doneToday ? "line-through" : "none" }}>{h.name}</span>
                   </div>
                 ))}

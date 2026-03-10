@@ -6,6 +6,26 @@ import { v4 as uuid } from "uuid";
 export type AccentColor = "green" | "blue" | "coral" | "purple" | "amber" | "rose" | "cyan" | "custom";
 export type ThemeMode = "dark" | "light" | "system";
 
+export interface NoteChecklistItem {
+  id: string;
+  text: string;
+  done: boolean;
+}
+
+export type NoteCategory = "General" | "Personal" | "Work" | "Ideas" | "Journal" | "Reference";
+
+export const NOTE_COLORS = [
+  { key: "default", color: "var(--bg-card)", label: "Default" },
+  { key: "blue", color: "rgba(59,130,246,0.12)", label: "Blue" },
+  { key: "green", color: "rgba(34,197,94,0.12)", label: "Green" },
+  { key: "purple", color: "rgba(168,85,247,0.12)", label: "Purple" },
+  { key: "amber", color: "rgba(234,179,8,0.12)", label: "Amber" },
+  { key: "rose", color: "rgba(244,63,94,0.12)", label: "Rose" },
+  { key: "cyan", color: "rgba(6,182,212,0.12)", label: "Cyan" },
+];
+
+export const NOTE_CATEGORIES: NoteCategory[] = ["General", "Personal", "Work", "Ideas", "Journal", "Reference"];
+
 export interface Note {
   id: string;
   title: string;
@@ -14,6 +34,9 @@ export interface Note {
   pinned: boolean;
   starred: boolean;
   archived: boolean;
+  category: NoteCategory;
+  color: string;
+  checklist: NoteChecklistItem[];
   createdAt: string;
   updatedAt: string;
 }
@@ -48,6 +71,14 @@ export interface BusinessIdea {
 }
 
 export type TaskPriority = "Chill" | "Important" | "URGENT";
+export type TaskStatus = "todo" | "in_progress" | "done";
+
+export interface TaskSubtask {
+  id: string;
+  text: string;
+  done: boolean;
+}
+
 export interface Task {
   id: string;
   title: string;
@@ -55,11 +86,13 @@ export interface Task {
   completed: boolean;
   completedAt?: string | null;
   priority: TaskPriority;
+  status: TaskStatus;
   dueDate: string | null;
   dueTime?: string | null;
   recurring: string | null;
   recurrenceEnd?: string | null;
   snoozedUntil: string | null;
+  subtasks: TaskSubtask[];
   createdAt: string;
 }
 
@@ -143,9 +176,12 @@ interface AppState {
   lockVault: () => void;
 
   // Notes
-  addNote: (title: string, content: string, tags?: string[]) => void;
+  addNote: (title: string, content: string, tags?: string[], category?: NoteCategory, color?: string) => void;
   updateNote: (id: string, updates: Partial<Note>) => void;
   deleteNote: (id: string) => void;
+  addChecklistItem: (noteId: string, text: string) => void;
+  toggleChecklistItem: (noteId: string, itemId: string) => void;
+  deleteChecklistItem: (noteId: string, itemId: string) => void;
 
   // Ideas
   addIdea: (title: string, description: string, category?: string) => void;
@@ -163,6 +199,9 @@ interface AppState {
   updateTask: (id: string, updates: Partial<Task>) => void;
   toggleTask: (id: string) => void;
   deleteTask: (id: string) => void;
+  addSubtask: (taskId: string, text: string) => void;
+  toggleSubtask: (taskId: string, subtaskId: string) => void;
+  deleteSubtask: (taskId: string, subtaskId: string) => void;
 
   // Habits
   addHabit: (name: string, frequency?: "daily" | "weekly") => void;
@@ -297,14 +336,14 @@ export const useStore = create<AppState>()(
       lockVault: () => set({ vaultUnlocked: false }),
 
       // Notes
-      addNote: (title, content, tags = []) => {
+      addNote: (title, content, tags = [], category = "General", color = "default") => {
         const id = uuid();
         const now = new Date().toISOString();
-        const note: Note = { id, title, content, tags, pinned: false, starred: false, archived: false, createdAt: now, updatedAt: now };
+        const note: Note = { id, title, content, tags, pinned: false, starred: false, archived: false, category, color, checklist: [], createdAt: now, updatedAt: now };
         set((s) => ({ notes: [note, ...s.notes] }));
         if (get().isServerMode) {
           apiCall("notes", "POST", { title, content, tags }).then((res) => {
-            if (res) set((s) => ({ notes: s.notes.map((n) => (n.id === id ? { ...res } : n)) }));
+            if (res) set((s) => ({ notes: s.notes.map((n) => (n.id === id ? { ...res, category, color, checklist: [] } : n)) }));
           });
         }
       },
@@ -313,6 +352,34 @@ export const useStore = create<AppState>()(
           notes: s.notes.map((n) => (n.id === id ? { ...n, ...updates, updatedAt: new Date().toISOString() } : n)),
         }));
         if (get().isServerMode) apiCall("notes", "PUT", { id, ...updates });
+      },
+      addChecklistItem: (noteId, text) => {
+        const itemId = uuid();
+        set((s) => ({
+          notes: s.notes.map((n) => n.id === noteId ? {
+            ...n,
+            checklist: [...(n.checklist || []), { id: itemId, text, done: false }],
+            updatedAt: new Date().toISOString(),
+          } : n),
+        }));
+      },
+      toggleChecklistItem: (noteId, itemId) => {
+        set((s) => ({
+          notes: s.notes.map((n) => n.id === noteId ? {
+            ...n,
+            checklist: (n.checklist || []).map((c) => c.id === itemId ? { ...c, done: !c.done } : c),
+            updatedAt: new Date().toISOString(),
+          } : n),
+        }));
+      },
+      deleteChecklistItem: (noteId, itemId) => {
+        set((s) => ({
+          notes: s.notes.map((n) => n.id === noteId ? {
+            ...n,
+            checklist: (n.checklist || []).filter((c) => c.id !== itemId),
+            updatedAt: new Date().toISOString(),
+          } : n),
+        }));
       },
       deleteNote: (id) => {
         set((s) => ({ notes: s.notes.filter((n) => n.id !== id) }));
@@ -389,11 +456,11 @@ export const useStore = create<AppState>()(
       // Tasks
       addTask: (title, priority = "Chill", dueDate = null) => {
         const id = uuid();
-        const task: Task = { id, title, completed: false, priority, dueDate, recurring: null, snoozedUntil: null, createdAt: new Date().toISOString() };
+        const task: Task = { id, title, completed: false, priority, status: "todo", dueDate, recurring: null, snoozedUntil: null, subtasks: [], createdAt: new Date().toISOString() };
         set((s) => ({ tasks: [task, ...s.tasks] }));
         if (get().isServerMode) {
           apiCall("tasks", "POST", { title, priority, dueDate }).then((res) => {
-            if (res) set((s) => ({ tasks: s.tasks.map((t) => (t.id === id ? { ...res } : t)) }));
+            if (res) set((s) => ({ tasks: s.tasks.map((t) => (t.id === id ? { ...res, status: "todo", subtasks: [] } : t)) }));
           });
         }
       },
@@ -406,13 +473,38 @@ export const useStore = create<AppState>()(
         if (!task) return;
         const completed = !task.completed;
         set((s) => ({
-          tasks: s.tasks.map((t) => (t.id === id ? { ...t, completed, completedAt: completed ? new Date().toISOString() : null } : t)),
+          tasks: s.tasks.map((t) => (t.id === id ? { ...t, completed, status: completed ? "done" : "todo", completedAt: completed ? new Date().toISOString() : null } : t)),
         }));
         if (get().isServerMode) apiCall("tasks", "PUT", { id, completed });
       },
       deleteTask: (id) => {
         set((s) => ({ tasks: s.tasks.filter((t) => t.id !== id) }));
         if (get().isServerMode) apiCall("tasks", "DELETE", { id });
+      },
+      addSubtask: (taskId, text) => {
+        const subtaskId = uuid();
+        set((s) => ({
+          tasks: s.tasks.map((t) => t.id === taskId ? {
+            ...t,
+            subtasks: [...(t.subtasks || []), { id: subtaskId, text, done: false }],
+          } : t),
+        }));
+      },
+      toggleSubtask: (taskId, subtaskId) => {
+        set((s) => ({
+          tasks: s.tasks.map((t) => t.id === taskId ? {
+            ...t,
+            subtasks: (t.subtasks || []).map((s) => s.id === subtaskId ? { ...s, done: !s.done } : s),
+          } : t),
+        }));
+      },
+      deleteSubtask: (taskId, subtaskId) => {
+        set((s) => ({
+          tasks: s.tasks.map((t) => t.id === taskId ? {
+            ...t,
+            subtasks: (t.subtasks || []).filter((s) => s.id !== subtaskId),
+          } : t),
+        }));
       },
 
       // Habits

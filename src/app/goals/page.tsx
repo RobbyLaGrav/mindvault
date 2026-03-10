@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useStore, Goal } from "@/store/useStore";
 import { motion, AnimatePresence } from "framer-motion";
+import CircleCheckbox from "@/components/ui/CircleCheckbox";
 
 const TYPE_LABELS: Record<Goal["type"], string> = {
   "90day": "90 Day",
@@ -153,15 +154,12 @@ export default function GoalsPage() {
                   <p className="text-xs font-medium mb-2" style={{ color: "var(--text-muted)" }}>Milestones</p>
                   {goal.milestones.map((m, idx) => (
                     <div key={idx} className="flex items-center gap-2 mb-2" onClick={(e) => e.stopPropagation()}>
-                      <button onClick={() => toggleMilestone(goal.id, idx)}
-                        className="w-4 h-4 rounded border flex items-center justify-center shrink-0 text-[8px]"
-                        style={{
-                          borderColor: m.done ? "var(--accent)" : "var(--border)",
-                          background: m.done ? "var(--accent)" : "transparent",
-                          color: "#000",
-                        }}>
-                        {m.done && "✓"}
-                      </button>
+                      <CircleCheckbox
+                        checked={m.done}
+                        onChange={() => toggleMilestone(goal.id, idx)}
+                        size={18}
+                        color="var(--accent)"
+                      />
                       <span className="text-xs" style={{
                         color: m.done ? "var(--text-muted)" : "var(--text-secondary)",
                         textDecoration: m.done ? "line-through" : "none",

@@ -3,6 +3,7 @@
 import { useStore } from "@/store/useStore";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useMemo } from "react";
+import CircleCheckbox from "@/components/ui/CircleCheckbox";
 
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -206,15 +207,12 @@ export default function CalendarPage() {
                   <div className="flex flex-col gap-2">
                     {selectedTasks.map((t) => (
                       <div key={t.id} className="flex items-center gap-3 p-2.5 rounded-xl" style={{ background: "var(--bg-primary)" }}>
-                        <button onClick={() => toggleTask(t.id)}
-                          className="w-4 h-4 rounded border-2 shrink-0 flex items-center justify-center text-[10px]"
-                          style={{
-                            borderColor: t.completed ? "var(--text-muted)" : priorityColor(t.priority),
-                            background: t.completed ? "var(--text-muted)" : "transparent",
-                            color: t.completed ? "#000" : "transparent",
-                          }}>
-                          {t.completed ? "✓" : ""}
-                        </button>
+                        <CircleCheckbox
+                          checked={t.completed}
+                          onChange={() => toggleTask(t.id)}
+                          size={18}
+                          color={t.completed ? "var(--text-muted)" : priorityColor(t.priority)}
+                        />
                         <span className="text-sm flex-1 truncate" style={{
                           color: t.completed ? "var(--text-muted)" : "var(--text-primary)",
                           textDecoration: t.completed ? "line-through" : "none",
@@ -238,10 +236,13 @@ export default function CalendarPage() {
                   <div className="flex flex-col gap-2">
                     {selectedHabits.map((h) => (
                       <div key={h.id} className="flex items-center gap-3 p-2">
-                        <div className="w-4 h-4 rounded flex items-center justify-center text-[10px]"
-                          style={{ background: h.completed ? h.color : "transparent", border: `2px solid ${h.color}`, color: h.completed ? "#000" : "transparent" }}>
-                          {h.completed ? "✓" : ""}
-                        </div>
+                        <CircleCheckbox
+                          checked={h.completed}
+                          onChange={() => {}}
+                          size={18}
+                          color={h.color}
+                          disabled
+                        />
                         <span className="text-sm" style={{ color: h.completed ? "var(--text-muted)" : "var(--text-primary)" }}>
                           {h.name}
                         </span>

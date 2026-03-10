@@ -45,16 +45,21 @@ export default function SparkPage() {
 
   return (
     <div className="max-w-5xl">
-      <div className="flex items-center justify-between mb-6">
+      <motion.div
+        className="flex items-center justify-between mb-6"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">⚡ Spark</h1>
+          <h1 className="text-3xl font-bold tracking-tight">⚡ Spark</h1>
           <p className="text-sm mt-1" style={{ color: "var(--text-muted)" }}>{ideas.filter((i) => !i.archived).length} ideas</p>
         </div>
         <button onClick={() => { setShowForm(true); setEditing(null); setTitle(""); setDesc(""); setCategory(""); }}
           className="px-4 py-2 rounded-xl text-sm font-semibold" style={{ background: "var(--accent)", color: "#000" }}>
           + New Idea
         </button>
-      </div>
+      </motion.div>
 
       {/* Status filter */}
       <div className="flex gap-2 mb-6">
@@ -79,8 +84,7 @@ export default function SparkPage() {
             style={{ background: "rgba(0,0,0,0.7)", backdropFilter: "blur(4px)" }}
             onClick={() => setShowForm(false)}>
             <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }}
-              className="w-full max-w-lg rounded-2xl p-6"
-              style={{ background: "var(--bg-secondary)", border: "1px solid var(--border)" }}
+              className="w-full max-w-lg card-modern"
               onClick={(e) => e.stopPropagation()}>
               <h3 className="text-lg font-semibold mb-4">{editing ? "Edit Idea" : "New Idea"}</h3>
               <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Idea title"
@@ -111,9 +115,11 @@ export default function SparkPage() {
           {visible.map((idea) => (
             <motion.div key={idea.id} layout
               initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9 }}
-              className="break-inside-avoid rounded-2xl p-5 cursor-pointer group"
-              style={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderLeft: `3px solid ${idea.color}` }}
-              onClick={() => startEdit(idea)}>
+              className="break-inside-avoid glass cursor-pointer group rounded-2xl p-5"
+              style={{ borderLeft: `3px solid ${idea.color}` }}
+              onClick={() => startEdit(idea)}
+              whileHover={{ y: -4 }}
+            >
               <div className="flex items-start justify-between mb-2">
                 <h3 className="font-semibold text-sm flex-1">{idea.title}</h3>
                 <span className="text-[10px] px-2 py-0.5 rounded-full font-medium ml-2"

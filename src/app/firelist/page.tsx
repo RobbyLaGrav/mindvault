@@ -69,9 +69,14 @@ export default function FireListPage() {
 
   return (
     <div className="max-w-5xl">
-      <div className="flex items-center justify-between mb-1">
-        <h1 className="text-2xl font-bold tracking-tight">🔥 Fire List</h1>
-        <div className="flex gap-1 p-1 rounded-lg" style={{ background: "var(--bg-card)", border: "1px solid var(--border)" }}>
+      <motion.div
+        className="flex items-center justify-between mb-6"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <h1 className="text-3xl font-bold tracking-tight">🔥 Fire List</h1>
+        <div className="flex gap-1 p-1 rounded-lg glass-md">
           <button onClick={() => setViewMode("list")}
             className="text-xs px-3 py-1.5 rounded-md font-medium transition-all"
             style={{
@@ -89,13 +94,18 @@ export default function FireListPage() {
             Kanban
           </button>
         </div>
-      </div>
+      </motion.div>
       <p className="text-sm mb-6" style={{ color: "var(--text-muted)" }}>
         {tasks.filter((t) => !t.completed).length} active / {tasks.filter((t) => t.completed).length} completed
       </p>
 
       {/* Add form */}
-      <div className="rounded-2xl p-4 mb-6" style={{ background: "var(--bg-card)", border: "1px solid var(--border)" }}>
+      <motion.div
+        className="card-modern mb-6"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.1 }}
+      >
         <div className="flex gap-2 mb-3">
           <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="What needs to get done?"
             className="flex-1 rounded-xl p-3 text-sm outline-none"
@@ -125,7 +135,7 @@ export default function FireListPage() {
             className="text-xs rounded-lg p-1.5 outline-none"
             style={{ background: "var(--bg-primary)", color: "var(--text-secondary)", border: "1px solid var(--border)" }} />
         </div>
-      </div>
+      </motion.div>
 
       {/* Filter (list mode only) */}
       {viewMode === "list" && (
@@ -151,7 +161,13 @@ export default function FireListPage() {
             const columnTasks = tasks.filter((t) => (t.status || (t.completed ? "done" : "todo")) === status);
             const config = STATUS_CONFIG[status];
             return (
-              <div key={status} className="rounded-2xl p-4" style={{ background: "var(--bg-card)", border: "1px solid var(--border)" }}>
+              <motion.div
+                key={status}
+                className="card-modern"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+              >
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2">
                     <span>{config.icon}</span>
@@ -169,8 +185,8 @@ export default function FireListPage() {
                       return (
                         <motion.div key={task.id} layout
                           initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-                          className="rounded-xl p-3 group"
-                          style={{ background: "var(--bg-primary)", border: "1px solid var(--border)" }}>
+                          className="rounded-xl p-3 group glass"
+                        >
                           <div className="flex items-start gap-2 mb-2">
                             <CircleCheckbox
                               checked={task.completed}
@@ -216,7 +232,7 @@ export default function FireListPage() {
                     })}
                   </AnimatePresence>
                 </div>
-              </div>
+              </motion.div>
             );
           })}
         </div>
@@ -234,8 +250,8 @@ export default function FireListPage() {
               return (
                 <motion.div key={task.id} layout
                   initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, x: -50 }}
-                  className="rounded-xl p-4 group"
-                  style={{ background: "var(--bg-card)", border: "1px solid var(--border)" }}>
+                  className="card-modern group"
+                >
 
                   <div className="flex items-center gap-3 cursor-pointer" onClick={() => setExpandedTask(isExpanded ? null : task.id)}>
                     {/* Checkbox */}
@@ -370,12 +386,17 @@ export default function FireListPage() {
       )}
 
       {sorted.length === 0 && viewMode === "list" && (
-        <div className="rounded-2xl p-12 text-center" style={{ background: "var(--bg-card)", border: "1px solid var(--border)" }}>
+        <motion.div
+          className="card-modern p-12 text-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+        >
           <p className="text-4xl mb-3">🔥</p>
           <p className="font-medium" style={{ color: "var(--text-secondary)" }}>
             {filter === "completed" ? "Nothing completed yet" : "All clear!"}
           </p>
-        </div>
+        </motion.div>
       )}
     </div>
   );

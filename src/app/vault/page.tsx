@@ -77,9 +77,9 @@ export default function VaultPage() {
 
   return (
     <div className="max-w-3xl">
-      <div className="flex items-center justify-between mb-6">
+      <motion.div className="flex items-center justify-between mb-6" initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">🔒 Vault</h1>
+          <h1 className="text-3xl font-bold tracking-tight">🔒 Vault</h1>
           <p className="text-sm mt-1" style={{ color: "var(--text-muted)" }}>{vaultNotes.length} secured notes</p>
         </div>
         <div className="flex gap-2">
@@ -92,7 +92,7 @@ export default function VaultPage() {
             + New
           </button>
         </div>
-      </div>
+      </motion.div>
 
       <AnimatePresence>
         {showForm && (
@@ -101,8 +101,7 @@ export default function VaultPage() {
             style={{ background: "rgba(0,0,0,0.7)", backdropFilter: "blur(4px)" }}
             onClick={() => setShowForm(false)}>
             <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }}
-              className="w-full max-w-lg rounded-2xl p-6"
-              style={{ background: "var(--bg-secondary)", border: "1px solid var(--border)" }}
+              className="w-full max-w-lg card-modern"
               onClick={(e) => e.stopPropagation()}>
               <h3 className="text-lg font-semibold mb-4">{editing ? "Edit" : "New Secured Note"}</h3>
               <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Title" autoFocus
@@ -126,10 +125,7 @@ export default function VaultPage() {
 
       <div className="space-y-3">
         {vaultNotes.map((note) => (
-          <motion.div key={note.id} layout
-            className="rounded-2xl p-5 cursor-pointer group"
-            style={{ background: "var(--bg-card)", border: "1px solid var(--border)" }}
-            onClick={() => startEdit(note)}>
+          <motion.div key={note.id} layout className="card-modern cursor-pointer group" onClick={() => startEdit(note)} whileHover={{ y: -4 }}>
             <div className="flex items-start justify-between">
               <div className="flex-1 min-w-0">
                 <h3 className="font-semibold text-sm mb-1">{note.title}</h3>
@@ -146,11 +142,11 @@ export default function VaultPage() {
       </div>
 
       {vaultNotes.length === 0 && (
-        <div className="rounded-2xl p-12 text-center" style={{ background: "var(--bg-card)", border: "1px solid var(--border)" }}>
+        <motion.div className="card-modern p-12 text-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
           <p className="text-4xl mb-3">🔐</p>
           <p className="font-medium" style={{ color: "var(--text-secondary)" }}>Vault is empty</p>
           <p className="text-sm mt-1" style={{ color: "var(--text-muted)" }}>Store your private notes securely</p>
-        </div>
+        </motion.div>
       )}
     </div>
   );

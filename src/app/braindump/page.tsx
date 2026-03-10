@@ -93,31 +93,45 @@ export default function BrainDumpPage() {
 
   return (
     <div className="max-w-5xl">
-      <div className="flex items-center justify-between mb-6">
+      <motion.div
+        className="flex items-center justify-between mb-6"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">🧠 Brain Dump</h1>
+          <h1 className="text-3xl font-bold tracking-tight">🧠 Brain Dump</h1>
           <p className="text-sm mt-1" style={{ color: "var(--text-muted)" }}>
             {notes.filter((n) => !n.archived).length} notes
           </p>
         </div>
-        <button onClick={() => { setShowForm(true); setEditing(null); setTitle(""); setContent(""); setTagInput(""); setSelectedColor("default"); setSelectedCategory("General"); }}
+        <motion.button
+          onClick={() => { setShowForm(true); setEditing(null); setTitle(""); setContent(""); setTagInput(""); setSelectedColor("default"); setSelectedCategory("General"); }}
           className="px-4 py-2 rounded-xl text-sm font-semibold"
-          style={{ background: "var(--accent)", color: "#000" }}>
+          style={{ background: "var(--accent)", color: "#000" }}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
           + New Note
-        </button>
-      </div>
+        </motion.button>
+      </motion.div>
 
       {/* Search */}
-      <div className="mb-4">
+      <motion.div
+        className="mb-4"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.1 }}
+      >
         <input
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="🔍 Search notes..."
-          className="w-full rounded-xl p-3 text-sm outline-none"
-          style={{ background: "var(--bg-card)", color: "var(--text-primary)", border: "1px solid var(--border)" }}
+          className="w-full rounded-xl p-3 text-sm outline-none glass"
+          style={{ color: "var(--text-primary)" }}
         />
-      </div>
+      </motion.div>
 
       {/* Filters */}
       <div className="flex gap-2 mb-4 flex-wrap">
@@ -163,8 +177,7 @@ export default function BrainDumpPage() {
             style={{ background: "rgba(0,0,0,0.7)", backdropFilter: "blur(4px)" }}
             onClick={() => setShowForm(false)}>
             <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }}
-              className="w-full max-w-lg rounded-2xl p-6 max-h-[85vh] overflow-y-auto"
-              style={{ background: "var(--bg-secondary)", border: "1px solid var(--border)" }}
+              className="w-full max-w-lg card-modern max-h-[85vh] overflow-y-auto"
               onClick={(e) => e.stopPropagation()}>
               <h3 className="text-lg font-semibold mb-4">{editing ? "Edit Note" : "New Note"}</h3>
 
@@ -236,9 +249,10 @@ export default function BrainDumpPage() {
             return (
               <motion.div key={note.id} layout
                 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95 }}
-                className="rounded-2xl p-5 cursor-pointer group flex flex-col"
-                style={{ background: noteColor, border: "1px solid var(--border)" }}
-                onClick={() => setExpandedNote(isExpanded ? null : note.id)}>
+                className="card-modern cursor-pointer group flex flex-col"
+                onClick={() => setExpandedNote(isExpanded ? null : note.id)}
+                whileHover={{ y: -4 }}
+              >
 
                 {/* Header */}
                 <div className="flex items-start justify-between mb-2">
@@ -364,11 +378,16 @@ export default function BrainDumpPage() {
       </div>
 
       {sorted.length === 0 && (
-        <div className="rounded-2xl p-12 text-center" style={{ background: "var(--bg-card)", border: "1px solid var(--border)" }}>
+        <motion.div
+          className="card-modern p-12 text-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+        >
           <p className="text-4xl mb-3">🧠</p>
           <p className="font-medium" style={{ color: "var(--text-secondary)" }}>No notes yet</p>
           <p className="text-sm mt-1" style={{ color: "var(--text-muted)" }}>Start dumping your brain</p>
-        </div>
+        </motion.div>
       )}
     </div>
   );

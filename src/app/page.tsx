@@ -71,19 +71,57 @@ export default function DashboardPage() {
 
   return (
     <div className="max-w-6xl">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight" style={{ color: "var(--text-primary)" }}>
-          {greeting}{user?.name ? `, ${user.name.split(" ")[0]}` : ""}
-        </h1>
-        <p className="text-sm mt-1" style={{ color: "var(--text-muted)" }}>{dateStr}</p>
-      </div>
+      {/* Hero Section */}
+      <motion.div
+        className="relative overflow-hidden rounded-3xl mb-8 p-12"
+        style={{
+          background: "linear-gradient(135deg, rgba(34,197,94,0.2) 0%, rgba(59,130,246,0.1) 100%)"
+        }}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+      >
+        {/* Animated background orbs */}
+        <motion.div
+          className="absolute top-0 right-0 w-96 h-96 rounded-full opacity-5"
+          style={{ background: "var(--accent)", filter: "blur(80px)" }}
+          animate={{ x: [0, 30, 0], y: [0, 20, 0] }}
+          transition={{ duration: 8, repeat: Infinity }}
+        />
+        <motion.div
+          className="absolute bottom-0 left-0 w-72 h-72 rounded-full opacity-5"
+          style={{ background: "#3b82f6", filter: "blur(80px)" }}
+          animate={{ x: [0, -20, 0], y: [0, -30, 0] }}
+          transition={{ duration: 10, repeat: Infinity }}
+        />
+
+        <div className="relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <h1 className="text-5xl font-bold mb-3" style={{ color: "var(--text-primary)" }}>
+              {greeting}{user?.name ? `, ${user.name.split(" ")[0]}` : ""} 👋
+            </h1>
+            <p className="text-xl" style={{ color: "var(--text-secondary)" }}>
+              You're crushing it. {completedToday} completed today{overdueTasks.length > 0 ? `, ${overdueTasks.length} overdue` : ""}.
+            </p>
+          </motion.div>
+        </div>
+      </motion.div>
 
       {/* Overdue Banner */}
       {overdueTasks.length > 0 && (
-        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
-          className="rounded-2xl p-5 mb-6"
-          style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.15)" }}>
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="rounded-2xl p-5 mb-8 backdrop-blur-sm"
+          style={{
+            background: "linear-gradient(135deg, rgba(239,68,68,0.1) 0%, rgba(239,68,68,0.05) 100%)",
+            border: "1px solid rgba(239,68,68,0.2)"
+          }}
+        >
           <div className="flex items-center gap-2 mb-3">
             <span className="text-base">🚨</span>
             <h3 className="text-sm font-semibold" style={{ color: "#ef4444" }}>
@@ -103,7 +141,7 @@ export default function DashboardPage() {
       )}
 
       {/* Quick Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
         {[
           { label: "Due Today", value: todayTasks.length, icon: "📋", color: "#3b82f6", href: "/firelist" },
           { label: "Completed Today", value: completedToday, icon: "✅", color: "#22c55e", href: "/firelist" },
@@ -111,9 +149,13 @@ export default function DashboardPage() {
           { label: "Goal Progress", value: `${avgGoalProgress}%`, icon: "🎯", color: "#eab308", href: "/goals" },
         ].map((stat, i) => (
           <Link key={stat.label} href={stat.href} className="no-underline">
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
-              className="rounded-2xl p-4 transition-all hover:scale-[1.02]"
-              style={{ background: "var(--bg-card)", border: "1px solid var(--border)" }}>
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.05 }}
+              className="rounded-2xl p-4 card-modern cursor-pointer"
+              whileHover={{ y: -4 }}
+            >
               <div className="flex items-center justify-between mb-2"><span className="text-lg">{stat.icon}</span></div>
               <p className="text-2xl font-bold" style={{ color: stat.color }}>{stat.value}</p>
               <p className="text-xs mt-0.5" style={{ color: "var(--text-muted)" }}>{stat.label}</p>
@@ -126,7 +168,12 @@ export default function DashboardPage() {
         {/* Left Column */}
         <div className="lg:col-span-2 flex flex-col gap-6">
           {/* Today's Focus */}
-          <div className="rounded-2xl p-5" style={{ background: "var(--bg-card)", border: "1px solid var(--border)" }}>
+          <motion.div
+            className="card-modern"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+          >
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-base font-semibold flex items-center gap-2" style={{ color: "var(--text-primary)" }}>
                 🎯 Today&apos;s Focus
@@ -150,10 +197,15 @@ export default function DashboardPage() {
                 ))}
               </div>
             )}
-          </div>
+          </motion.div>
 
           {/* Upcoming This Week */}
-          <div className="rounded-2xl p-5" style={{ background: "var(--bg-card)", border: "1px solid var(--border)" }}>
+          <motion.div
+            className="card-modern"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-base font-semibold flex items-center gap-2" style={{ color: "var(--text-primary)" }}>
                 📅 Upcoming This Week
@@ -175,11 +227,16 @@ export default function DashboardPage() {
                 ))}
               </div>
             )}
-          </div>
+          </motion.div>
 
           {/* Inbox */}
           {unprocessedInbox.length > 0 && (
-            <div className="rounded-2xl p-5" style={{ background: "var(--bg-card)", border: "1px solid var(--border)" }}>
+            <motion.div
+              className="card-modern"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+            >
               <h2 className="text-base font-semibold mb-4 flex items-center gap-2" style={{ color: "var(--text-primary)" }}>
                 📥 Inbox <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: "var(--accent)", color: "#000" }}>{unprocessedInbox.length}</span>
               </h2>
@@ -201,14 +258,19 @@ export default function DashboardPage() {
                   </motion.div>
                 ))}
               </AnimatePresence>
-            </div>
+            </motion.div>
           )}
         </div>
 
         {/* Right Column */}
         <div className="flex flex-col gap-6">
           {/* Habits */}
-          <div className="rounded-2xl p-5" style={{ background: "var(--bg-card)", border: "1px solid var(--border)" }}>
+          <motion.div
+            className="card-modern"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+          >
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-base font-semibold flex items-center gap-2" style={{ color: "var(--text-primary)" }}>🔁 Today&apos;s Habits</h2>
               <Link href="/rituals" className="text-xs no-underline" style={{ color: "var(--accent)" }}>All</Link>
@@ -225,10 +287,15 @@ export default function DashboardPage() {
                 ))}
               </div>
             )}
-          </div>
+          </motion.div>
 
           {/* Goals */}
-          <div className="rounded-2xl p-5" style={{ background: "var(--bg-card)", border: "1px solid var(--border)" }}>
+          <motion.div
+            className="card-modern"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-base font-semibold flex items-center gap-2" style={{ color: "var(--text-primary)" }}>🎯 Goals</h2>
               <Link href="/goals" className="text-xs no-underline" style={{ color: "var(--accent)" }}>All</Link>
@@ -251,10 +318,15 @@ export default function DashboardPage() {
                 ))}
               </div>
             )}
-          </div>
+          </motion.div>
 
           {/* Overview */}
-          <div className="rounded-2xl p-5" style={{ background: "var(--bg-card)", border: "1px solid var(--border)" }}>
+          <motion.div
+            className="card-modern"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          >
             <h2 className="text-base font-semibold mb-4 flex items-center gap-2" style={{ color: "var(--text-primary)" }}>📊 Overview</h2>
             <div className="grid grid-cols-2 gap-3">
               {[
@@ -269,7 +341,7 @@ export default function DashboardPage() {
                 </Link>
               ))}
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </div>

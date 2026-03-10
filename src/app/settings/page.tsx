@@ -69,14 +69,14 @@ export default function SettingsPage() {
 
   return (
     <div className="max-w-4xl">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2" style={{ color: "var(--text-primary)" }}>
+      <motion.div className="mb-6" initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+        <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2" style={{ color: "var(--text-primary)" }}>
           ⚙️ Settings
         </h1>
         <p className="text-sm mt-1" style={{ color: "var(--text-muted)" }}>
           Customize your MindVault experience
         </p>
-      </div>
+      </motion.div>
 
       {/* Tabs */}
       <div className="flex gap-1 mb-6 p-1 rounded-xl" style={{ background: "var(--bg-card)" }}>
@@ -97,7 +97,7 @@ export default function SettingsPage() {
       {tab === "appearance" && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col gap-6">
           {/* Theme Mode */}
-          <div className="rounded-2xl p-5" style={{ background: "var(--bg-card)", border: "1px solid var(--border)" }}>
+          <div className="card-modern">
             <h3 className="text-sm font-semibold mb-1" style={{ color: "var(--text-primary)" }}>Theme Mode</h3>
             <p className="text-xs mb-4" style={{ color: "var(--text-muted)" }}>Choose between dark, light, or system preference</p>
             <div className="flex gap-3">
@@ -118,7 +118,7 @@ export default function SettingsPage() {
           </div>
 
           {/* Accent Color */}
-          <div className="rounded-2xl p-5" style={{ background: "var(--bg-card)", border: "1px solid var(--border)" }}>
+          <div className="card-modern">
             <h3 className="text-sm font-semibold mb-1" style={{ color: "var(--text-primary)" }}>Accent Color</h3>
             <p className="text-xs mb-4" style={{ color: "var(--text-muted)" }}>Personalize the accent color throughout the app</p>
             <div className="grid grid-cols-7 gap-3">
@@ -139,7 +139,7 @@ export default function SettingsPage() {
           </div>
 
           {/* Typography */}
-          <div className="rounded-2xl p-5" style={{ background: "var(--bg-card)", border: "1px solid var(--border)" }}>
+          <div className="card-modern">
             <h3 className="text-sm font-semibold mb-1" style={{ color: "var(--text-primary)" }}>Typography</h3>
             <p className="text-xs mb-4" style={{ color: "var(--text-muted)" }}>Adjust font size and family</p>
 
@@ -204,7 +204,7 @@ export default function SettingsPage() {
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col gap-6">
           {isAuthenticated ? (
             <>
-              <div className="rounded-2xl p-5" style={{ background: "var(--bg-card)", border: "1px solid var(--border)" }}>
+              <div className="card-modern">
                 <h3 className="text-sm font-semibold mb-4" style={{ color: "var(--text-primary)" }}>Profile</h3>
                 <div className="flex flex-col gap-4">
                   <div>
@@ -225,7 +225,7 @@ export default function SettingsPage() {
                 </div>
               </div>
 
-              <div className="rounded-2xl p-5" style={{ background: "var(--bg-card)", border: "1px solid var(--border)" }}>
+              <div className="card-modern">
                 <h3 className="text-sm font-semibold mb-4" style={{ color: "var(--text-primary)" }}>Change Password</h3>
                 <div className="flex flex-col gap-4">
                   <div>
@@ -265,7 +265,7 @@ export default function SettingsPage() {
       {/* Notifications Tab */}
       {tab === "notifications" && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-          <div className="rounded-2xl p-5" style={{ background: "var(--bg-card)", border: "1px solid var(--border)" }}>
+          <div className="card-modern">
             <h3 className="text-sm font-semibold mb-4" style={{ color: "var(--text-primary)" }}>Email Notifications</h3>
             <div className="flex flex-col gap-4">
               {[
@@ -295,7 +295,7 @@ export default function SettingsPage() {
       {/* Data Tab */}
       {tab === "data" && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col gap-6">
-          <div className="rounded-2xl p-5" style={{ background: "var(--bg-card)", border: "1px solid var(--border)" }}>
+          <div className="card-modern">
             <h3 className="text-sm font-semibold mb-1" style={{ color: "var(--text-primary)" }}>Export Data</h3>
             <p className="text-xs mb-4" style={{ color: "var(--text-muted)" }}>Download all your data as JSON</p>
             <button onClick={() => {

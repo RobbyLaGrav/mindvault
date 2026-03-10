@@ -69,16 +69,30 @@ export default function Sidebar() {
 
   return (
     <aside
-      className="fixed left-0 top-0 bottom-0 w-[260px] flex flex-col py-5 px-3 z-50 overflow-y-auto"
-      style={{ background: "var(--bg-secondary)", borderRight: "1px solid var(--border)" }}
+      className="fixed left-0 top-0 bottom-0 w-[260px] flex flex-col py-5 px-3 z-50 overflow-y-auto backdrop-blur-sm"
+      style={{ background: "linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%)", borderRight: "1px solid var(--border)" }}
     >
       {/* Logo */}
-      <div className="px-3 mb-6">
+      <motion.div
+        className="px-3 mb-6 rounded-2xl p-3 transition-all"
+        style={{
+          background: "linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%)",
+          border: "1px solid rgba(255,255,255,0.06)"
+        }}
+        whileHover={{
+          background: "linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.04) 100%)",
+          boxShadow: "0 8px 16px rgba(34,197,94,0.1)"
+        }}
+      >
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold"
-            style={{ background: "var(--accent)", color: "#000" }}>
+          <motion.div
+            className="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold"
+            style={{ background: "var(--accent)", color: "#000" }}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+          >
             M
-          </div>
+          </motion.div>
           <div>
             <h1 className="text-base font-bold tracking-tight" style={{ color: "var(--accent)" }}>
               MINDVAULT
@@ -88,42 +102,50 @@ export default function Sidebar() {
             </p>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Navigation */}
       <nav className="flex-1 flex flex-col gap-1">
         {NAV_SECTIONS.map((section) => (
-          <div key={section.label} className="mb-3">
-            <p className="section-label px-3 mb-1.5">{section.label}</p>
+          <div key={section.label} className="mb-4">
+            <p className="section-label px-3 mb-2">{section.label}</p>
             {section.items.map((item) => {
               const active = pathname === item.href;
               return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="relative flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200 no-underline group"
-                  style={{
-                    color: active ? "var(--text-primary)" : "var(--text-secondary)",
-                    background: active ? "var(--accent-glow)" : "transparent",
-                  }}
-                >
-                  {active && (
-                    <motion.div
-                      layoutId="sidebar-active"
-                      className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full"
-                      style={{ background: "var(--accent)" }}
-                      transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                    />
-                  )}
-                  <span className="text-base">{item.icon}</span>
-                  <div className="flex-1 min-w-0">
-                    <span className="block">{item.label}</span>
-                    <span className="block text-[10px] leading-tight opacity-0 group-hover:opacity-100 transition-opacity"
-                      style={{ color: "var(--text-muted)" }}>
-                      {item.desc}
-                    </span>
-                  </div>
-                </Link>
+                <motion.div key={item.href}>
+                  <Link
+                    href={item.href}
+                    className="relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 no-underline group"
+                    style={{
+                      color: active ? "var(--text-primary)" : "var(--text-secondary)",
+                      background: active ? "linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%)" : "transparent",
+                      border: active ? "1px solid rgba(255,255,255,0.1)" : "1px solid transparent",
+                    }}
+                    whileHover={{ x: 4 }}
+                  >
+                    {active && (
+                      <motion.div
+                        layoutId="sidebar-active"
+                        className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-6 rounded-r-full"
+                        style={{ background: "var(--accent)" }}
+                        transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                      />
+                    )}
+                    <motion.span
+                      className="text-base"
+                      whileHover={{ scale: 1.2 }}
+                    >
+                      {item.icon}
+                    </motion.span>
+                    <div className="flex-1 min-w-0">
+                      <span className="block">{item.label}</span>
+                      <span className="block text-[10px] leading-tight opacity-0 group-hover:opacity-100 transition-opacity"
+                        style={{ color: "var(--text-muted)" }}>
+                        {item.desc}
+                      </span>
+                    </div>
+                  </Link>
+                </motion.div>
               );
             })}
           </div>

@@ -65,19 +65,19 @@ export default function CalendarPage() {
   return (
     <div className="max-w-6xl">
       {/* Page Header */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2" style={{ color: "var(--text-primary)" }}>
+      <motion.div className="mb-6" initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+        <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2" style={{ color: "var(--text-primary)" }}>
           📅 Calendar
         </h1>
         <p className="text-sm mt-1" style={{ color: "var(--text-muted)" }}>
           View your tasks and schedule at a glance
         </p>
-      </div>
+      </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Calendar Grid */}
         <div className="lg:col-span-2">
-          <div className="rounded-2xl p-5" style={{ background: "var(--bg-card)", border: "1px solid var(--border)" }}>
+          <motion.div className="card-modern" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
             {/* Month Navigation */}
             <div className="flex items-center justify-between mb-5">
               <button onClick={prevMonth} className="px-3 py-1.5 rounded-lg text-sm"
@@ -172,7 +172,7 @@ export default function CalendarPage() {
                 <span className="text-[10px]" style={{ color: "var(--text-muted)" }}>Chill</span>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
 
         {/* Detail Panel */}

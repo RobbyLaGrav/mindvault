@@ -60,16 +60,16 @@ export default function RitualsPage() {
 
   return (
     <div className="max-w-4xl">
-      <div className="flex items-center justify-between mb-6">
+      <motion.div className="flex items-center justify-between mb-6" initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">🔁 Rituals</h1>
+          <h1 className="text-3xl font-bold tracking-tight">🔁 Rituals</h1>
           <p className="text-sm mt-1" style={{ color: "var(--text-muted)" }}>{habits.length} habits tracked</p>
         </div>
         <button onClick={() => setShowForm(true)}
           className="px-4 py-2 rounded-xl text-sm font-semibold" style={{ background: "var(--accent)", color: "#000" }}>
           + New Habit
         </button>
-      </div>
+      </motion.div>
 
       {/* Form */}
       <AnimatePresence>
@@ -79,8 +79,7 @@ export default function RitualsPage() {
             style={{ background: "rgba(0,0,0,0.7)", backdropFilter: "blur(4px)" }}
             onClick={() => setShowForm(false)}>
             <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }}
-              className="w-full max-w-md rounded-2xl p-6"
-              style={{ background: "var(--bg-secondary)", border: "1px solid var(--border)" }}
+              className="w-full max-w-md card-modern"
               onClick={(e) => e.stopPropagation()}>
               <h3 className="text-lg font-semibold mb-4">New Habit</h3>
               <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Habit name (e.g. Meditate, Read, Exercise)"
@@ -118,9 +117,7 @@ export default function RitualsPage() {
           const streak = getStreak(habit.completedDates);
           const doneToday = habit.completedDates.includes(today);
           return (
-            <motion.div key={habit.id} layout
-              className="rounded-2xl p-5"
-              style={{ background: "var(--bg-card)", border: "1px solid var(--border)" }}>
+            <motion.div key={habit.id} layout className="card-modern" whileHover={{ y: -4 }}>
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
                   <button onClick={() => toggleHabitDate(habit.id, today)}

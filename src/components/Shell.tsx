@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
+import { motion } from "framer-motion";
 import { useStore } from "@/store/useStore";
 import { useAuthStore } from "@/store/useAuthStore";
 import Sidebar from "./Sidebar";
@@ -78,9 +79,15 @@ export default function Shell({ children }: { children: React.ReactNode }) {
       <Sidebar />
       <CommandPalette />
       <QuickCapture />
-      <main className="ml-[260px] min-h-screen p-8">
+      <motion.main
+        className="ml-[260px] min-h-screen p-8"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        key={pathname}
+      >
         {children}
-      </main>
+      </motion.main>
 
       {/* Sync indicator */}
       {isAuthenticated && (

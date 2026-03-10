@@ -46,9 +46,10 @@ export default function EmpirePage() {
             <div className="space-y-3">
               {items.map((biz) => (
                 <motion.div key={biz.id} layout
-                  className="rounded-xl p-4 cursor-pointer group"
-                  style={{ background: "var(--bg-card)", border: "1px solid var(--border)" }}
-                  onClick={() => setExpanded(expanded === biz.id ? null : biz.id)}>
+                  className="rounded-xl p-4 cursor-pointer group glass"
+                  onClick={() => setExpanded(expanded === biz.id ? null : biz.id)}
+                  whileHover={{ y: -2 }}
+                >
                   <h4 className="text-sm font-medium mb-1">{biz.title}</h4>
                   <div className="flex items-center gap-1 mb-2">
                     <span className="text-[10px]" style={{ color: "var(--text-muted)" }}>Viability:</span>
@@ -118,9 +119,14 @@ export default function EmpirePage() {
 
   return (
     <div className="max-w-6xl">
-      <div className="flex items-center justify-between mb-6">
+      <motion.div
+        className="flex items-center justify-between mb-6"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">🏛️ Empire</h1>
+          <h1 className="text-3xl font-bold tracking-tight">🏛️ Empire</h1>
           <p className="text-sm mt-1" style={{ color: "var(--text-muted)" }}>{businessIdeas.length} business ideas</p>
         </div>
         <div className="flex gap-2">
@@ -133,7 +139,7 @@ export default function EmpirePage() {
             + New
           </button>
         </div>
-      </div>
+      </motion.div>
 
       {/* Quick add */}
       <AnimatePresence>
@@ -143,8 +149,7 @@ export default function EmpirePage() {
             style={{ background: "rgba(0,0,0,0.7)", backdropFilter: "blur(4px)" }}
             onClick={() => setShowForm(false)}>
             <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }}
-              className="w-full max-w-md rounded-2xl p-6"
-              style={{ background: "var(--bg-secondary)", border: "1px solid var(--border)" }}
+              className="w-full max-w-md card-modern"
               onClick={(e) => e.stopPropagation()}>
               <h3 className="text-lg font-semibold mb-4">New Business Idea</h3>
               <input type="text" value={newTitle} onChange={(e) => setNewTitle(e.target.value)} placeholder="What's the idea?"
@@ -166,11 +171,11 @@ export default function EmpirePage() {
       {boardView}
 
       {businessIdeas.length === 0 && (
-        <div className="rounded-2xl p-12 text-center" style={{ background: "var(--bg-card)", border: "1px solid var(--border)" }}>
+        <motion.div className="card-modern p-12 text-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
           <p className="text-4xl mb-3">🏛️</p>
           <p className="font-medium" style={{ color: "var(--text-secondary)" }}>No business ideas yet</p>
           <p className="text-sm mt-1" style={{ color: "var(--text-muted)" }}>Build your empire</p>
-        </div>
+        </motion.div>
       )}
     </div>
   );
